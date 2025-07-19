@@ -7,35 +7,50 @@
     body {
       font-family: sans-serif;
       direction: rtl;
-      background: #f9f9f9;
+      background: #f0f0f0;
       padding: 20px;
       text-align: center;
     }
+
     .bracket {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 40px;
       justify-items: center;
     }
+
     .column {
       display: flex;
       flex-direction: column;
       justify-content: space-around;
       height: 600px;
     }
+
     .match {
       background: white;
-      border: 2px solid #bbb;
-      border-radius: 8px;
+      border: 2px solid #aaa;
+      border-radius: 10px;
       padding: 10px;
       width: 120px;
       cursor: pointer;
-      box-shadow: 1px 1px 5px #ccc;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
+
+    .match:hover {
+      background: #e3f2fd;
+    }
+
     .winner {
       background: #c8e6c9;
       border-color: #2e7d32;
     }
+
+    button {
+      margin-top: 30px;
+      padding: 8px 16px;
+      font-size: 16px;
+    }
+
     h2 {
       margin-bottom: 30px;
     }
@@ -83,7 +98,6 @@
   </div>
 </div>
 
-<br>
 <button onclick="reset()">ریست</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
@@ -118,10 +132,10 @@
         const to = document.getElementById(toId);
         if (from && to && from.textContent.trim()) {
           const line = new LeaderLine(
-            LeaderLine.pointAnchor(from, { x: "100%", y: "50%" }),
-            LeaderLine.pointAnchor(to, { x: "0%", y: "50%" }),
+            LeaderLine.areaAnchor(from, { side: 'right' }),
+            LeaderLine.areaAnchor(to, { side: 'left' }),
             {
-              color: '#666',
+              color: '#444',
               path: 'grid',
               startPlug: 'disc',
               endPlug: 'arrow1',
@@ -144,26 +158,24 @@
 
     next.textContent = current.textContent;
     next.classList.add("winner");
-
     drawLines();
   }
 
   function reset() {
     const names = ['صالح', 'ناصر', 'حمید', 'مجید', 'محمد', 'امین', 'فرزاد', 'حسین'];
-    const shuffled = names.sort(() => 0.5 - Math.random());
+    const shuffled = names.sort(() => Math.random() - 0.5);
+    const ids = ['m1a', 'm1b', 'm2a', 'm2b', 'm3a', 'm3b', 'm4a', 'm4b'];
 
-    const startIds = ['m1a', 'm1b', 'm2a', 'm2b', 'm3a', 'm3b', 'm4a', 'm4b'];
-
-    startIds.forEach((id, i) => {
+    ids.forEach((id, i) => {
       const el = document.getElementById(id);
       el.textContent = shuffled[i];
-      el.classList.remove('winner');
+      el.classList.remove("winner");
     });
 
     document.querySelectorAll('.match').forEach(m => {
-      if (!startIds.includes(m.id)) {
+      if (!ids.includes(m.id)) {
         m.textContent = '';
-        m.classList.remove('winner');
+        m.classList.remove("winner");
       }
     });
 

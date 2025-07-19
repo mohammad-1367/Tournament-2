@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>نمودار جام حذفی</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      direction: rtl;
+      background: #f9f9f9;
+      padding: 20px;
+      text-align: center;
+    }
+    .bracket {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 40px;
+      justify-items: center;
+    }
+    .column {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      height: 600px;
+    }
+    .match {
+      background: white;
+      border: 2px solid #bbb;
+      border-radius: 8px;
+      padding: 10px;
+      width: 120px;
+      cursor: pointer;
+      box-shadow: 1px 1px 5px #ccc;
+    }
+    .winner {
+      background: #c8e6c9;
+      border-color: #2e7d32;
+    }
+    h2 {
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>نمودار جام حذفی پینگ‌پنگ</h2>
+
+<div class="bracket">
+  <!-- یک هشتم نهایی -->
+  <div class="column">
+    <div class="match" id="m1a">صالح</div>
+    <div class="match" id="m1b">ناصر</div>
+    <div class="match" id="m2a">حمید</div>
+    <div class="match" id="m2b">مجید</div>
+    <div class="match" id="m3a">محمد</div>
+    <div class="match" id="m3b">امین</div>
+    <div class="match" id="m4a">فرزاد</div>
+    <div class="match" id="m4b">حسین</div>
+  </div>
+
+  <!-- یک چهارم نهایی -->
+  <div class="column">
+    <div class="match" id="qf1"></div>
+    <div class="match" id="qf2"></div>
+    <div class="match" id="qf3"></div>
+    <div class="match" id="qf4"></div>
+  </div>
+
+  <!-- نیمه نهایی -->
+  <div class="column">
+    <div class="match" id="sf1"></div>
+    <div class="match" id="sf2"></div>
+  </div>
+
+  <!-- فینال -->
+  <div class="column">
+    <div class="match" id="final"></div>
+  </div>
+
+  <!-- قهرمان -->
+  <div class="column">
+    <div class="match" id="champion"></div>
+  </div>
+</div>
+
+<br>
+<button onclick="reset()">ریست</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
+<script>
+  const matchMap = {
+    'm1a': 'qf1',
+    'm1b': 'qf1',
+    'm2a': 'qf2',
+    'm2b': 'qf2',
+    'm3a': 'qf3',
+    'm3b': 'qf3',
+    'm4a': 'qf4',
+    'm4b': 'qf4',
+    'qf1': 'sf1',
+    'qf2': 'sf1',
+    'qf3': 'sf2',
+    'qf4': 'sf2',
+    'sf1': 'final',
+    'sf2': 'final',
+    'final': 'champion'
+  };
+
+  const lines = [];
+
+  function drawLines() {
+    lines.forEach(line => line.remove());
+    lines.length = 0;
+
+    setTimeout(() => {
+      for (const [fromId, toId] of Object.entries(matchMap)) {
+        const from = document.getElementById(fromId);
+        const to = document.getElementById(toId);
+        if (from && to && from.textContent.trim()) {
+          const line = new LeaderLine(
+            LeaderLine.pointAnchor(from, { x: "100%", y: "50%" }),
+            LeaderLine.pointAnchor(to, { x: "0%", y: "50%" }),
+            {
+              color: '#666',
+              path: 'grid',
+              startPlug: 'disc',
+              endPlug: 'arrow1',
+              size: 2
+            }
+          );
+          lines.push(line);
+        }
+      }
+    }, 300);
+  }
+
+  function handleClick(e) {
+    const current = e.target;
+    const nextId = matchMap[current.id];
+    if (!nextId) return;
+
+    const next = document.getElementById(nextId);
+    if (!next) return;
+
+    next.textContent = current.textContent;
+    next.classList.add("winner");
+
+    drawLines();
+  }
+
+  function reset() {
+    const names = ['صالح', 'ناصر', 'حمید', 'مجید', 'محمد', 'امین', 'فرزاد', 'حسین'];
+    const shuffled = names.sort(() => 0.5 - Math.random());
+
+    const startIds = ['m1a', 'm1b', 'm2a', 'm2b', 'm3a', 'm3b', 'm4a', 'm4b'];
+
+    startIds.forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.textContent = shuffled[i];
+      el.classList.remove('winner');
+    });
+
+    document.querySelectorAll('.match').forEach(m => {
+      if (!startIds.includes(m.id)) {
+        m.textContent = '';
+        m.classList.remove('winner');
+      }
+    });
+
+    drawLines();
+  }
+
+  document.querySelectorAll('.match').forEach(m => {
+    m.addEventListener('click', handleClick);
+  });
+
+  window.addEventListener('load', drawLines);
+  window.addEventListener('resize', drawLines);
+</script>
+
+</body>
+</html>
